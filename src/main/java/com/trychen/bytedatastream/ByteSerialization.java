@@ -98,6 +98,12 @@ public final class ByteSerialization {
     }
 
     public static <T> void register(Class<T> clazz, ByteSteamSerializer<T> serializer, ByteSteamDeserializer<T> deserializer) {
+        if (clazz.isPrimitive()) {
+            Class<?> box = Utils.CLASS_PRIMITIVE_MAPPING.get(clazz);
+            if (box == null) return;
+            register(box, serializer);
+            register(box, deserializer);
+        }
         register(clazz, serializer);
         register(clazz, deserializer);
     }
@@ -119,13 +125,13 @@ public final class ByteSerialization {
     }
 
     static {
-        register(Integer.class, (out, o) -> out.writeInt(o), in -> in.readInt());
-        register(Long.class, (out, o) -> out.writeLong(o), in -> in.readLong());
-        register(Float.class, (out, o) -> out.writeFloat(o), in -> in.readFloat());
-        register(Double.class, (out, o) -> out.writeDouble(o), in -> in.readDouble());
-        register(Boolean.class, (out, o) -> out.writeBoolean(o), in -> in.readBoolean());
-        register(Short.class, (out, o) -> out.writeShort(o), in -> in.readShort());
-        register(Byte.class, (out, o) -> out.writeByte(o), in -> in.readByte());
+        register(int.class, (out, o) -> out.writeInt(o), in -> in.readInt());
+        register(long.class, (out, o) -> out.writeLong(o), in -> in.readLong());
+        register(float.class, (out, o) -> out.writeFloat(o), in -> in.readFloat());
+        register(double.class, (out, o) -> out.writeDouble(o), in -> in.readDouble());
+        register(boolean.class, (out, o) -> out.writeBoolean(o), in -> in.readBoolean());
+        register(short.class, (out, o) -> out.writeShort(o), in -> in.readShort());
+        register(byte.class, (out, o) -> out.writeByte(o), in -> in.readByte());
         register(byte[].class, (out, o) -> out.writeBytes(o), in -> in.readBytes());
 
         register(String.class, (out, o) -> out.writeUTF(o), in -> in.readUTF());
