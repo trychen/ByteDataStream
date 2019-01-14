@@ -1,14 +1,26 @@
-.gradle
-/build/
+# Use Whitelist Mode
+/*
 
-# Ignore Gradle GUI config
-gradle-app.setting
+# Gradle Files
+!gradle/
+!gradlew
+!gradlew.bat
+!build.gradle
+!gradle.properties
+!settings.gradle
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+# Description Files
+!README.md
+!LICENSE
 
-# Cache of project
-.gradletasknamecache
+# Source Code
+!src/
 
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
+# Git Files
+!.gitignore
+
+# Libs Files
+!libs/
+
+# Ci Files
+!.travis.yml
