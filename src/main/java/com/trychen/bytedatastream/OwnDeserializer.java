@@ -6,7 +6,7 @@ import com.github.mouse0w0.fastreflection.MethodAccessor;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-public class OwnDeserializer implements ByteSteamDeserializer {
+public class OwnDeserializer implements ByteDeserializer {
     private MethodAccessor methodAccessor;
 
     public OwnDeserializer(Method method) throws Exception {

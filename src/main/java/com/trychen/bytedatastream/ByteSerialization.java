@@ -3,13 +3,12 @@ package com.trychen.bytedatastream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.*;
 
 public final class ByteSerialization {
-    private static Map<Type, ByteSteamSerializer> serializers = new HashMap<>();
-    private static Map<Type, ByteSteamDeserializer> deserializers = new HashMap<>();
+    private static Map<Type, ByteSerializer> serializers = new HashMap<>();
+    private static Map<Type, ByteDeserializer> deserializers = new HashMap<>();
 
     private ByteSerialization() {
     }
@@ -19,10 +18,10 @@ public final class ByteSerialization {
     }
 
     public static void serialize(DataOutput out, Object object, Type type) throws IOException {
-        ByteSteamSerializer byteSerializable = getSerializer(type);
+        ByteSerializer byteSerializable = getSerializer(type);
 
-        if (byteSerializable == null && object instanceof ByteSteamSerializable)
-            ((ByteSteamSerializable) object).serialize(out);
+        if (byteSerializable == null && object instanceof ByteSerializable)
+            ((ByteSerializable) object).serialize(out);
         else if (object instanceof Enum) out.writeEnum((Enum) object);
         else if (byteSerializable == null) new RuntimeException("Couldn't find any serialization");
         else byteSerializable.serialize(out, object);
@@ -46,7 +45,7 @@ public final class ByteSerialization {
     }
 
     public static Object deserialize(DataInput in, Type type) throws IOException {
-        ByteSteamDeserializer byteSerializable = getDeserializer(type);
+        ByteDeserializer byteSerializable = getDeserializer(type);
         if (byteSerializable == null) {
             if (type instanceof Class && Enum.class.isAssignableFrom((Class) type)) return in.readEnum((Class) type);
             return null;
@@ -58,7 +57,7 @@ public final class ByteSerialization {
         DataInput in = new DataInput(data);
         Object[] objects = new Object[types.length];
         for (int i = 0; i < types.length; i++) {
-            ByteSteamDeserializer deserializer = getDeserializer(types[i]);
+            ByteDeserializer deserializer = getDeserializer(types[i]);
             if (deserializer == null)
                 throw new IllegalArgumentException("Couldn't find any serialization for type " + types[i].getTypeName());
             objects[i] = deserialize(in, types[i]);
@@ -68,20 +67,20 @@ public final class ByteSerialization {
 
     public static Object deserialize(byte[] data, Type type) throws IOException {
         DataInput in = new DataInput(data);
-        ByteSteamDeserializer deserializer = getDeserializer(type);
+        ByteDeserializer deserializer = getDeserializer(type);
         if (deserializer == null)
             throw new IllegalArgumentException("Couldn't find any deserializer for " + type.getTypeName());
         return deserializer.deserialize(in);
     }
 
-    public static ByteSteamSerializer getSerializer(Type type) {
+    public static ByteSerializer getSerializer(Type type) {
         return serializers.get(type);
     }
 
-    public static ByteSteamDeserializer getDeserializer(Type type) {
+    public static ByteDeserializer getDeserializer(Type type) {
         if (!deserializers.containsKey(type)) {
-            ByteSteamDeserializer deserializer = null;
-            if (type instanceof Class && ByteSteamDeserializable.class.isAssignableFrom((Class<?>) type)) try {
+            ByteDeserializer deserializer = null;
+            if (type instanceof Class && ByteDeserializable.class.isAssignableFrom((Class<?>) type)) try {
                 Method deserialize = ((Class<?>) type).getDeclaredMethod("deserialize", DataInput.class);
                 register(type, deserializer = new OwnDeserializer(deserialize));
             } catch (Exception e) {
@@ -92,15 +91,15 @@ public final class ByteSerialization {
         return deserializers.get(type);
     }
 
-    public static Map<Type, ByteSteamSerializer> getSerializers() {
+    public static Map<Type, ByteSerializer> getSerializers() {
         return serializers;
     }
 
-    public static Map<Type, ByteSteamDeserializer> getDeserializers() {
+    public static Map<Type, ByteDeserializer> getDeserializers() {
         return deserializers;
     }
 
-    public static <T> void register(Class<T> clazz, ByteSteamSerializer<T> serializer, ByteSteamDeserializer<T> deserializer) {
+    public static <T> void register(Class<T> clazz, ByteSerializer<T> serializer, ByteDeserializer<T> deserializer) {
         if (clazz.isPrimitive()) {
             Class<?> box = TypeUtils.CLASS_PRIMITIVE_MAPPING.get(clazz);
             if (box == null) return;
@@ -111,19 +110,19 @@ public final class ByteSerialization {
         register(clazz, deserializer);
     }
 
-    public static <T> void register(Class<T> clazz, ByteSteamDeserializer<T> deserializer) {
+    public static <T> void register(Class<T> clazz, ByteDeserializer<T> deserializer) {
         deserializers.put(clazz, deserializer);
     }
 
-    public static <T> void register(Class<T> clazz, ByteSteamSerializer<T> serializer) {
+    public static <T> void register(Class<T> clazz, ByteSerializer<T> serializer) {
         serializers.put(clazz, serializer);
     }
 
-    public static <T> void register(Type type, ByteSteamDeserializer<T> deserializer) {
+    public static <T> void register(Type type, ByteDeserializer<T> deserializer) {
         deserializers.put(type, deserializer);
     }
 
-    public static <T> void register(Type type, ByteSteamSerializer<T> serializer) {
+    public static <T> void register(Type type, ByteSerializer<T> serializer) {
         serializers.put(type, serializer);
     }
 

@@ -3,6 +3,6 @@ package com.trychen.bytedatastream;
 import java.io.IOException;
 
 @FunctionalInterface
-public interface ByteSteamDeserializer<T> {
+public interface ByteDeserializer<T> {
     T deserialize(DataInput in) throws IOException;
 }

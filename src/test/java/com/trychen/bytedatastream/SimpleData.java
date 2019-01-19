@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.UUID;
 
 @lombok.Data
-public class SimpleData implements ByteSteamSerializable, ByteSteamDeserializable {
+public class SimpleData implements ByteSerializable, ByteDeserializable {
     private final int i;
     private final long l;
     private final double d;

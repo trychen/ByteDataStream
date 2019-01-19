@@ -17,10 +17,10 @@ Object[] objs = ByteSerialization.deserialize(data, String.class, int.class, boo
 
 ##### Serialize/Deserialize data class
 
-You need to implement interface `ByteSteamDeserializable` and `ByteSteamSerializable` first.
+You need to implement interface `ByteDeserializable` and `ByteSerializable` first.
 
 ```java
-public class SimpleData implements ByteSteamDeserializable, ByteSteamDeserializable {
+public class SimpleData implements ByteDeserializable, ByteDeserializable {
     public final String message;
     public final int id;
     public final Date date;
@@ -57,7 +57,7 @@ SimpleData data = ByteSerialization.deserialize(data, SimpleData.class);
 
 Your can use the following method to register your serializer/deserializer to some specific type.
 ```java
-ByteSerialization.register(java.lang.Class<T>, ByteSteamSerializer<T>, ByteSteamDeserializer<T>);
+ByteSerialization.register(java.lang.Class<T>, ByteSerializer<T>, ByteSteamDeserializer<T>);
 ```
 Usage:
 ```java
