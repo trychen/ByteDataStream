@@ -3,7 +3,7 @@ package com.trychen.bytedatastream;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface Utils {
+public interface TypeUtils {
     Map<Class<?>, Class<?>> CLASS_PRIMITIVE_MAPPING = new HashMap<Class<?>, Class<?>>() {{
         put(byte.class, Byte.class);
         put(short.class, Short.class);

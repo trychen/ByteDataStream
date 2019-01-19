@@ -3,9 +3,9 @@ package com.trychen.bytedatastream;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Time;
+import java.time.LocalTime;
+import java.util.*;
 
 public final class ByteSerialization {
     private static Map<Type, ByteSteamSerializer> serializers = new HashMap<>();
@@ -23,9 +23,9 @@ public final class ByteSerialization {
 
         if (byteSerializable == null && object instanceof ByteSteamSerializable)
             ((ByteSteamSerializable) object).serialize(out);
+        else if (object instanceof Enum) out.writeEnum((Enum) object);
         else if (byteSerializable == null) new RuntimeException("Couldn't find any serialization");
         else byteSerializable.serialize(out, object);
-
     }
 
     public static byte[] serialize(Object... object) throws IOException {
@@ -47,7 +47,10 @@ public final class ByteSerialization {
 
     public static Object deserialize(DataInput in, Type type) throws IOException {
         ByteSteamDeserializer byteSerializable = getDeserializer(type);
-        if (byteSerializable == null) return null;
+        if (byteSerializable == null) {
+            if (type instanceof Class && Enum.class.isAssignableFrom((Class) type)) return in.readEnum((Class) type);
+            return null;
+        }
         return byteSerializable.deserialize(in);
     }
 
@@ -99,7 +102,7 @@ public final class ByteSerialization {
 
     public static <T> void register(Class<T> clazz, ByteSteamSerializer<T> serializer, ByteSteamDeserializer<T> deserializer) {
         if (clazz.isPrimitive()) {
-            Class<?> box = Utils.CLASS_PRIMITIVE_MAPPING.get(clazz);
+            Class<?> box = TypeUtils.CLASS_PRIMITIVE_MAPPING.get(clazz);
             if (box == null) return;
             register(box, serializer);
             register(box, deserializer);
@@ -136,6 +139,9 @@ public final class ByteSerialization {
 
         register(String.class, (out, o) -> out.writeUTF(o), in -> in.readUTF());
         register(Date.class, (out, o) -> out.writeDate(o), in -> in.readDate());
+        register(LocalTime.class, (out, o) -> out.writeLocalTime(o), in -> in.readLocalTime());
+        register(Locale.class, (out, o) -> out.writeUTF(o.toLanguageTag()), in -> Locale.forLanguageTag(in.readUTF()));
+        register(UUID.class, (out, o) -> out.writeUUID(o), in -> in.readUUID());
     }
 
 }
