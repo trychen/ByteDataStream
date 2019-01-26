@@ -2,6 +2,7 @@ package com.trychen.bytedatastream;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
 import java.util.*;
@@ -22,9 +23,11 @@ public final class ByteSerialization {
 
         if (byteSerializable == null && object instanceof ByteSerializable)
             ((ByteSerializable) object).serialize(out);
+        else if (byteSerializable != null) byteSerializable.serialize(out, object);
         else if (object instanceof Enum) out.writeEnum((Enum) object);
-        else if (byteSerializable == null) new RuntimeException("Couldn't find any serialization");
-        else byteSerializable.serialize(out, object);
+        else if (TypeUtils.isArray(type)) out.writeArray((Object[]) object);
+        else if (object instanceof List) out.writeList((List) object, type);
+        else throw new RuntimeException("Couldn't find any serialization");
     }
 
     public static byte[] serialize(Object... object) throws IOException {
@@ -44,13 +47,20 @@ public final class ByteSerialization {
         return out.toByteArray();
     }
 
+    public static byte[] serialize(Object object, Type types) throws IOException {
+        DataOutput out = new DataOutput();
+        serialize(out, object, types);
+        return out.toByteArray();
+    }
+
     public static Object deserialize(DataInput in, Type type) throws IOException {
         ByteDeserializer byteSerializable = getDeserializer(type);
-        if (byteSerializable == null) {
-            if (type instanceof Class && Enum.class.isAssignableFrom((Class) type)) return in.readEnum((Class) type);
-            return null;
-        }
-        return byteSerializable.deserialize(in);
+        if (byteSerializable != null) return byteSerializable.deserialize(in);
+        if (TypeUtils.isList(type)) return in.readList(type);
+        else if (TypeUtils.isArray(type)) return in.readArray(((Class) type).getComponentType());
+        else if (type instanceof Class && Enum.class.isAssignableFrom((Class) type)) return in.readEnum((Class) type);
+
+        return null;
     }
 
     public static Object[] deserialize(byte[] data, Type... types) throws IOException {
@@ -67,10 +77,7 @@ public final class ByteSerialization {
 
     public static Object deserialize(byte[] data, Type type) throws IOException {
         DataInput in = new DataInput(data);
-        ByteDeserializer deserializer = getDeserializer(type);
-        if (deserializer == null)
-            throw new IllegalArgumentException("Couldn't find any deserializer for " + type.getTypeName());
-        return deserializer.deserialize(in);
+        return deserialize(in, type);
     }
 
     public static ByteSerializer getSerializer(Type type) {

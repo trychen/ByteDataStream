@@ -80,3 +80,8 @@ ByteSerialization.register(Date.class, (out, o) -> out.writeDate(o), in -> in.re
 * UUID
 * Locale
 * LocalTime
+
+Collection: 
+
+* List
+* Array
