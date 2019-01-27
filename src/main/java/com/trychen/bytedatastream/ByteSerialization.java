@@ -68,9 +68,6 @@ public final class ByteSerialization {
         DataInput in = new DataInput(data);
         Object[] objects = new Object[types.length];
         for (int i = 0; i < types.length; i++) {
-            ByteDeserializer deserializer = getDeserializer(types[i]);
-            if (deserializer == null)
-                throw new IllegalArgumentException("Couldn't find any serialization for type " + types[i].getTypeName());
             objects[i] = deserialize(in, types[i]);
         }
         return objects;
