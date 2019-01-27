@@ -2,6 +2,7 @@ package com.trychen.bytedatastream;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @lombok.Data
@@ -18,6 +19,7 @@ public class SimpleData implements ByteSerializable, ByteDeserializable {
     private final Date date;
     private final Type type;
     private final UUID uuid;
+    private final List<Integer> integers;
 
     public enum Type {
         HELLO,
@@ -26,10 +28,24 @@ public class SimpleData implements ByteSerializable, ByteDeserializable {
 
     @Override
     public void serialize(DataOutput out) throws IOException {
-        out.write(i, l, d, f, s, b, bool, bytes, message, date, type, uuid);
+        out.write(i, l, d, f, s, b, bool, bytes, message, date, type, uuid, integers);
     }
 
     public static SimpleData deserialize(DataInput in) throws IOException {
-        return new SimpleData(in.readInt(), in.readLong(), in.readDouble(), in.readFloat(), in.readShort(), in.readByte(), in.readBoolean(), in.readBytes(), in.readUTF(), in.readDate(), in.readEnum(Type.class), in.readUUID());
+        return new SimpleData(
+                in.readInt(),
+                in.readLong(),
+                in.readDouble(),
+                in.readFloat(),
+                in.readShort(),
+                in.readByte(),
+                in.readBoolean(),
+                in.readBytes(),
+                in.readUTF(),
+                in.readDate(),
+                in.readEnum(Type.class),
+                in.readUUID(),
+                in.readList(TypeUtils.getParameterizedType(List.class, Integer.class))
+        );
     }
 }

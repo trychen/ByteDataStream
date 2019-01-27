@@ -7,10 +7,7 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DataInput extends DataInputStream {
     public DataInput(InputStream in) {
@@ -86,6 +83,17 @@ public class DataInput extends DataInputStream {
             list.add(read(actualType));
         }
         return list;
+    }
+
+    public Map readMap(Type type) throws IOException {
+        int size = readInt();
+        Map map = new HashMap(size);
+        Class[] actualType = TypeUtils.findMapActualType(type);
+        if (actualType == null) throw new RuntimeException("Couldn't find the actual type for list");
+        for (int i = 0; i < size; i++) {
+            map.put(read(actualType[0]), read(actualType[1]));
+        }
+        return map;
     }
 
     public UUID readUUID() throws IOException {

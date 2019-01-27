@@ -64,6 +64,13 @@ Usage:
 ByteSerialization.register(Date.class, (out, o) -> out.writeDate(o), in -> in.readDate());
 ```
 
+##### Parameterized Type Helper
+
+We provided a method to create parameterized type to help your serializer/deserializer List/Map/...
+```java
+TypeUtils.getParameterizedType(Class rawType, Type... parameters)
+```
+
 ##### Supported types
 
 * int
@@ -85,3 +92,4 @@ Collection:
 
 * List
 * Array
+* Map

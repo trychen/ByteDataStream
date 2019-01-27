@@ -27,6 +27,7 @@ public final class ByteSerialization {
         else if (object instanceof Enum) out.writeEnum((Enum) object);
         else if (TypeUtils.isArray(type)) out.writeArray((Object[]) object);
         else if (object instanceof List) out.writeList((List) object, type);
+        else if (object instanceof Map) out.writeMap((Map)object, type);
         else throw new RuntimeException("Couldn't find any serialization");
     }
 
@@ -57,9 +58,9 @@ public final class ByteSerialization {
         ByteDeserializer byteSerializable = getDeserializer(type);
         if (byteSerializable != null) return byteSerializable.deserialize(in);
         if (TypeUtils.isList(type)) return in.readList(type);
+        else if (TypeUtils.isMap(type)) return in.readMap(type);
         else if (TypeUtils.isArray(type)) return in.readArray(((Class) type).getComponentType());
         else if (type instanceof Class && Enum.class.isAssignableFrom((Class) type)) return in.readEnum((Class) type);
-
         return null;
     }
 

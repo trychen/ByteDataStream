@@ -2,18 +2,16 @@ package com.trychen.bytedatastream;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 public class ListTest {
-    private List<String> token;
     @Test
     public void test() throws Exception {
-        Type TYPE_TOKEN = ListTest.class.getDeclaredField("token").getGenericType();
+        Type TYPE_TOKEN = TypeUtils.getParameterizedType(List.class, String.class);
 
         List<String> strings = new ArrayList<>();
         strings.add("Hello");

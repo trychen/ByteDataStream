@@ -6,9 +6,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DataOutput extends DataOutputStream {
     public DataOutput() {
@@ -70,6 +68,16 @@ public class DataOutput extends DataOutputStream {
         }
     }
 
+    public void writeMap(Map map, Type type) throws IOException {
+        writeInt(map.size());
+        Class[] actualType = TypeUtils.findMapActualType(type);
+        if (actualType == null) throw new RuntimeException("Couldn't find the actual type for map");
+        for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
+            write(entry.getKey(), actualType[0]);
+            write(entry.getValue(), actualType[1]);
+        }
+    }
+
     public void writeLocalTime(LocalTime localTime) throws IOException {
         if (localTime.getNano() == 0) {
             if (localTime.getSecond() == 0) {
@@ -95,5 +103,4 @@ public class DataOutput extends DataOutputStream {
     public synchronized byte[] toByteArray() {
         return ((ByteVectorStream) out).toByteArray();
     }
-
 }

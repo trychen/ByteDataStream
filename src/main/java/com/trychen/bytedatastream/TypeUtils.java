@@ -1,10 +1,10 @@
 package com.trychen.bytedatastream;
 
+import com.trychen.bytedatastream.reflect.ParameterizedTypeImpl;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface TypeUtils {
     Map<Class<?>, Class<?>> CLASS_PRIMITIVE_MAPPING = new HashMap<Class<?>, Class<?>>() {{
@@ -19,18 +19,40 @@ public interface TypeUtils {
         put(void.class, Void.class);
     }};
 
+    static ParameterizedType getParameterizedType(Class rawType, Type... parameters) {
+        return new ParameterizedTypeImpl(rawType, parameters, null);
+    }
+
     static Class findListActualType(Type type) {
         Class classType = null;
         if (!(type instanceof ParameterizedType)) return null;
 
         ParameterizedType pType = (ParameterizedType) type;
-        if (pType.getActualTypeArguments().length <= 0) return null;
+        if (pType.getActualTypeArguments().length != 1) return null;
 
         Type clazz = pType.getActualTypeArguments()[0];
         if (clazz instanceof Class) {
             classType = (Class) clazz;
         }
         return classType;
+    }
+
+    static Class[] findMapActualType(Type type) {
+        Class[] classType = new Class[2];
+        if (!(type instanceof ParameterizedType)) return null;
+
+        ParameterizedType pType = (ParameterizedType) type;
+        if (pType.getActualTypeArguments().length != 2) return null;
+
+        Type keyClass = pType.getActualTypeArguments()[0];
+        Type valueClass = pType.getActualTypeArguments()[1];
+        if (keyClass instanceof Class && valueClass instanceof Class) {
+            classType[0] = (Class) keyClass;
+            classType[1] = (Class) valueClass;
+            return classType;
+        } else {
+            return null;
+        }
     }
 
     static boolean isList(Type type) {
@@ -43,5 +65,10 @@ public interface TypeUtils {
 
     static boolean isArray(Type type) {
         return type instanceof Class && ((Class) type).isArray();
+
+    }
+
+    static boolean isMap(Type type) {
+        return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class && Map.class.isAssignableFrom((Class<?>) ((ParameterizedType) type).getRawType());
     }
 }
