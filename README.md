@@ -92,4 +92,5 @@ Collection:
 
 * List
 * Array
+* Set
 * Map

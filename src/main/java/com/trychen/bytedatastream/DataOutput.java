@@ -2,8 +2,6 @@ package com.trychen.bytedatastream;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
 import java.util.*;
@@ -59,18 +57,24 @@ public class DataOutput extends DataOutputStream {
 //        }
     }
 
-    public void writeList(List list, Type type) throws IOException {
-        writeInt(list.size());
-        Class actualType = TypeUtils.findListActualType(type);
-        if (actualType == null) throw new RuntimeException("Couldn't find the actual type for list");
-        for (Object o : list) {
-            write(o, actualType);
+    public void writeList(List list, Class type) throws IOException {
+        writeCollection(list, type);
+    }
+    public void writeSet(Set set, Class type) throws IOException {
+        writeCollection(set, type);
+    }
+
+    public void writeCollection(Collection collection, Class type) throws IOException {
+        if (type == null) throw new RuntimeException("Couldn't find the actual type for list");
+        writeInt(collection.size());
+        for (Object o : collection) {
+            write(o, type);
         }
     }
 
     public void writeMap(Map map, Type type) throws IOException {
         writeInt(map.size());
-        Class[] actualType = TypeUtils.findMapActualType(type);
+        Class[] actualType = TypeUtils.findTwoParameterizedType(type);
         if (actualType == null) throw new RuntimeException("Couldn't find the actual type for map");
         for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
             write(entry.getKey(), actualType[0]);

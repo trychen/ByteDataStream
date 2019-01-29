@@ -28,7 +28,8 @@ public class SimpleData implements ByteSerializable, ByteDeserializable {
 
     @Override
     public void serialize(DataOutput out) throws IOException {
-        out.write(i, l, d, f, s, b, bool, bytes, message, date, type, uuid, integers);
+        out.write(i, l, d, f, s, b, bool, bytes, message, date, type, uuid);
+        out.writeList(integers, Integer.class);
     }
 
     public static SimpleData deserialize(DataInput in) throws IOException {
@@ -45,7 +46,7 @@ public class SimpleData implements ByteSerializable, ByteDeserializable {
                 in.readDate(),
                 in.readEnum(Type.class),
                 in.readUUID(),
-                in.readList(TypeUtils.getParameterizedType(List.class, Integer.class))
+                in.readList(Integer.class)
         );
     }
 }

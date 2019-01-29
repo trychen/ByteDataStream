@@ -74,21 +74,27 @@ public class DataInput extends DataInputStream {
         return Enum.valueOf(clazz, readUTF());
     }
 
-    public List readList(Type type) throws IOException {
+    public List readList(Class type) throws IOException {
+        return readCollection(new ArrayList(), type);
+    }
+
+    public Set readSet(Class type) throws IOException {
+        return readCollection(new HashSet(), type);
+    }
+
+    public <T extends Collection> T readCollection(T collection, Class type) throws IOException {
+        if (type == null) throw new RuntimeException("Couldn't find the actual type for list");
         int size = readInt();
-        List list = new ArrayList(size);
-        Class actualType = TypeUtils.findListActualType(type);
-        if (actualType == null) throw new RuntimeException("Couldn't find the actual type for list");
         for (int i = 0; i < size; i++) {
-            list.add(read(actualType));
+            collection.add(read(type));
         }
-        return list;
+        return collection;
     }
 
     public Map readMap(Type type) throws IOException {
         int size = readInt();
         Map map = new HashMap(size);
-        Class[] actualType = TypeUtils.findMapActualType(type);
+        Class[] actualType = TypeUtils.findTwoParameterizedType(type);
         if (actualType == null) throw new RuntimeException("Couldn't find the actual type for list");
         for (int i = 0; i < size; i++) {
             map.put(read(actualType[0]), read(actualType[1]));

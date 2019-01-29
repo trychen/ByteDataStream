@@ -23,7 +23,7 @@ public interface TypeUtils {
         return new ParameterizedTypeImpl(rawType, parameters, null);
     }
 
-    static Class findListActualType(Type type) {
+    static Class findOneParameterizedType(Type type) {
         Class classType = null;
         if (!(type instanceof ParameterizedType)) return null;
 
@@ -37,7 +37,7 @@ public interface TypeUtils {
         return classType;
     }
 
-    static Class[] findMapActualType(Type type) {
+    static Class[] findTwoParameterizedType(Type type) {
         Class[] classType = new Class[2];
         if (!(type instanceof ParameterizedType)) return null;
 
@@ -57,6 +57,10 @@ public interface TypeUtils {
 
     static boolean isList(Type type) {
         return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class && List.class.isAssignableFrom((Class<?>) ((ParameterizedType) type).getRawType());
+    }
+
+    static boolean isSet(Type type) {
+        return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class && Set.class.isAssignableFrom((Class<?>) ((ParameterizedType) type).getRawType());
     }
 
     static boolean isArray(Object obj) {
