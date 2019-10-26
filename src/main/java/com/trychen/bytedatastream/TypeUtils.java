@@ -69,10 +69,12 @@ public interface TypeUtils {
 
     static boolean isArray(Type type) {
         return type instanceof Class && ((Class) type).isArray();
-
     }
 
     static boolean isMap(Type type) {
         return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class && Map.class.isAssignableFrom((Class<?>) ((ParameterizedType) type).getRawType());
+    }
+    static boolean isCollection(Type type) {
+        return type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class && Collection.class.isAssignableFrom((Class<?>) ((ParameterizedType) type).getRawType());
     }
 }
