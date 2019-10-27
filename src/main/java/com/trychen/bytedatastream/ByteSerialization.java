@@ -145,6 +145,58 @@ public final class ByteSerialization {
         register(byte.class, (out, o) -> out.writeByte(o), in -> in.readByte());
         register(byte[].class, (out, o) -> out.writeBytes(o), in -> in.readBytes());
 
+        register(int[].class, (out, o) -> {
+            out.writeInt(o.length);
+            for (int i : o) out.writeInt(i);
+        }, in -> {
+            int[] r = new int[in.readInt()];
+            for (int i = 0; i < r.length; i++) r[i] = in.readInt();
+            return r;
+        });
+
+        register(double[].class, (out, o) -> {
+            out.writeInt(o.length);
+            for (double i : o) out.writeDouble(i);
+        }, in -> {
+            double[] r = new double[in.readInt()];
+            for (int i = 0; i < r.length; i++) r[i] = in.readDouble();
+            return r;
+        });
+
+        register(float[].class, (out, o) -> {
+            out.writeInt(o.length);
+            for (float i : o) out.writeFloat(i);
+        }, in -> {
+            float[] r = new float[in.readInt()];
+            for (int i = 0; i < r.length; i++) r[i] = in.readFloat();
+            return r;
+        });
+
+        register(boolean[].class, (out, o) -> {
+            out.writeInt(o.length);
+            for (boolean i : o) out.writeBoolean(i);
+        }, in -> {
+            boolean[] r = new boolean[in.readInt()];
+            for (int i = 0; i < r.length; i++) r[i] = in.readBoolean();
+            return r;
+        });
+        register(short[].class, (out, o) -> {
+            out.writeInt(o.length);
+            for (short i : o) out.writeShort(i);
+        }, in -> {
+            short[] r = new short[in.readInt()];
+            for (int i = 0; i < r.length; i++) r[i] = in.readShort();
+            return r;
+        });
+        register(long[].class, (out, o) -> {
+            out.writeInt(o.length);
+            for (long i : o) out.writeLong(i);
+        }, in -> {
+            long[] r = new long[in.readInt()];
+            for (int i = 0; i < r.length; i++) r[i] = in.readLong();
+            return r;
+        });
+
         register(String.class, (out, o) -> out.writeUTF(o), in -> in.readUTF());
         register(Date.class, (out, o) -> out.writeDate(o), in -> in.readDate());
         register(LocalTime.class, (out, o) -> out.writeLocalTime(o), in -> in.readLocalTime());
