@@ -137,12 +137,68 @@ public final class ByteSerialization {
 
     static {
         register(int.class, (out, o) -> out.writeInt(o), in -> in.readInt());
+        register(Integer.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeInt(o);
+            }
+        }, in -> in.readBoolean() ? in.readInt() : null);
+
         register(long.class, (out, o) -> out.writeLong(o), in -> in.readLong());
+        register(Long.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeLong(o);
+            }
+        }, in -> in.readBoolean() ? in.readLong() : null);
+
         register(float.class, (out, o) -> out.writeFloat(o), in -> in.readFloat());
+        register(Float.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeFloat(o);
+            }
+        }, in -> in.readBoolean() ? in.readFloat() : null);
+
         register(double.class, (out, o) -> out.writeDouble(o), in -> in.readDouble());
+        register(Double.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeDouble(o);
+            }
+        }, in -> in.readBoolean() ? in.readDouble() : null);
+
         register(boolean.class, (out, o) -> out.writeBoolean(o), in -> in.readBoolean());
+        register(Boolean.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeBoolean(o);
+            }
+        }, in -> in.readBoolean() ? in.readBoolean() : null);
+
         register(short.class, (out, o) -> out.writeShort(o), in -> in.readShort());
+        register(Short.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeShort(o);
+            }
+        }, in -> in.readBoolean() ? in.readShort() : null);
+
         register(byte.class, (out, o) -> out.writeByte(o), in -> in.readByte());
+        register(Byte.class, (out, o) -> {
+            if (o == null) out.writeBoolean(false);
+            else {
+                out.writeBoolean(true);
+                out.writeByte(o);
+            }
+        }, in -> in.readBoolean() ? in.readByte() : null);
+
         register(byte[].class, (out, o) -> out.writeBytes(o), in -> in.readBytes());
 
         register(int[].class, (out, o) -> {
