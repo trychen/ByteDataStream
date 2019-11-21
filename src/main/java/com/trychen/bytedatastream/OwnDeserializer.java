@@ -19,10 +19,8 @@ public class OwnDeserializer implements ByteDeserializer {
         try {
             return methodAccessor.invoke(null, in);
         } catch (Exception e) {
-            e.printStackTrace();
-            methodAccessor = null;
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public MethodAccessor getMethodAccessor() {
